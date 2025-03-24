@@ -23,7 +23,7 @@ public class Main {
         System.out.println(ConsoleStyle.CYAN + "2. " + ConsoleStyle.RESET + "Binary Search Tree implementation");
         ConsoleStyle.printPrompt("Enter your choice: ");
         
-        int choice = scanner.nextInt();
+        // int choice = scanner.nextInt();
         
         //  a small pause before transitioning
        

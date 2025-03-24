@@ -26,26 +26,7 @@ public class Main {
         int choice = scanner.nextInt();
         
         //  a small pause before transitioning
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            ConsoleStyle.printError(e.getMessage());
-        }
-        
-        if (choice == 1) {
-            GenericsKbArrayApp app = new GenericsKbArrayApp(scanner);
-            app.run();
-        } else if (choice == 2) {
-            GenericsKbBSTApp app = new GenericsKbBSTApp(scanner);
-            app.run();
-        } else {
-            ConsoleStyle.printError("Invalid choice. Exiting program.");
-            try {
-                Thread.sleep(1500);
-            } catch (InterruptedException e) {
-                ConsoleStyle.printError(e.getMessage());
-            }
-        }
+       
         
         scanner.close();
     }

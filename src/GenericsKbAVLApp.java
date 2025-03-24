@@ -64,8 +64,25 @@ public class GenericsKbAVLApp {
         }
         
     }
-    private void insert(Node root) {
+    private void insert(Statement statement) {
+        root = insertHelper(statement, this.root);
         // TODO Auto-generated method stub
+    }
+
+    private Node balance(Node root) {
+        return root;
+    }
+
+    private Node insertHelper(Statement statement, Node root) {
+        if (root == null) return new Node(statement);
+
+        if (statement.compareTo(root.statement) <= 0) {
+            root.left = insertHelper(statement, root.left);
+        } else if (statement.compareTo(root.statement) > 0) {
+            root.right = insertHelper(statement, root.right);
+        }
+
+        return balance(root);
     }
 
     private int balanaceFactor(Node node) {

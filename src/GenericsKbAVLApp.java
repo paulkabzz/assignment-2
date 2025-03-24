@@ -19,7 +19,7 @@ public class GenericsKbAVLApp {
         return node == null ? 0 : node.height;
     }
 
-    public Node rightRotate(Node node) {
+    private Node rightRotate(Node node) {
 
         Node node1 = node.left;
         Node node2 = node1.right;
@@ -27,8 +27,21 @@ public class GenericsKbAVLApp {
         node1.right = node;
         node.left = node2;
 
-        node.height = 1 + Math.max(height(node.left), height(node.right));
-        node1.height = 1 + Math.max(height(node1.left), height(node1.right));
+        updateHeight(node);
+        updateHeight(node1);
+
+        return node1;
+    }
+
+    private Node leftRotate(Node node) {
+        Node node1 = node.right;
+        Node node2 = node1.left;
+
+        node1.left = node;
+        node.right = node2;
+
+        updateHeight(node);
+        updateHeight(node1);
 
         return node1;
     }
@@ -51,12 +64,15 @@ public class GenericsKbAVLApp {
         }
         
     }
+    private void insert(Node root) {
+        // TODO Auto-generated method stub
+    }
 
     private int balanaceFactor(Node node) {
         return node == null ? 0 : height(node.right) - height(node.left);
     }
 
-    private void fixHeight(Node node) {
+    private void updateHeight(Node node) {
         node.height = 1 + Math.max(height(node.left), height(node.right));
     }
 

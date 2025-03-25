@@ -145,9 +145,9 @@ public class GenericsKbAVLApp {
     private Node insertHelper(Statement statement, Node root) {
         if (root == null) return new Node(statement);
 
-        if (statement.compareTo(root.statement) <= 0) {
+        if (statement.getTerm().compareTo(root.statement.getTerm()) <= 0) {
             root.left = insertHelper(statement, root.left);
-        } else if (statement.compareTo(root.statement) > 0) {
+        } else if (statement.getTerm().compareTo(root.statement.getTerm()) > 0) {
             root.right = insertHelper(statement, root.right);
         }
 

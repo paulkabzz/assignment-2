@@ -13,15 +13,20 @@ public class Main {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        GenericsAVLApp app = new GenericsAVLApp(scanner);
+
         
         ConsoleStyle.clearScreen();
         ConsoleStyle.printHeader();
         
-        System.out.println(ConsoleStyle.YELLOW + "Welcome to the GenericsKB Application" + ConsoleStyle.RESET);
-        System.out.println("\nChoose which implementation to use:");
-        System.out.println(ConsoleStyle.CYAN + "1. " + ConsoleStyle.RESET + "Array-based implementation");
-        System.out.println(ConsoleStyle.CYAN + "2. " + ConsoleStyle.RESET + "Binary Search Tree implementation");
-        ConsoleStyle.printPrompt("Enter your choice: ");
+        // System.out.println(ConsoleStyle.YELLOW + "Welcome to the GenericsKB Application" + ConsoleStyle.RESET);
+        // System.out.println("\nChoose which implementation to use:");
+        // System.out.println(ConsoleStyle.CYAN + "1. " + ConsoleStyle.RESET + "Array-based implementation");
+        // System.out.println(ConsoleStyle.CYAN + "2. " + ConsoleStyle.RESET + "Binary Search Tree implementation");
+        // ConsoleStyle.printPrompt("Enter your choice: ");
+
+        app.run();
+
         
         // int choice = scanner.nextInt();
         

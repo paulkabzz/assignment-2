@@ -16,7 +16,7 @@ SRC_FILES = $(shell find $(SRC_DIR) -name "*.java")
 CLASS_FILES = $(patsubst $(SRC_DIR)/%.java, $(BIN_DIR)/%.class, $(SRC_FILES))
 
 # Main class
-MAIN_CLASS = Main
+MAIN_CLASS = ExperimentRunner
 
 # Default target: compile
 all: $(CLASS_FILES)

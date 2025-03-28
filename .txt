@@ -1,5 +1,77 @@
-Create an application as described below to store and retrieve data using the AVL binary search tree data structure.
-Write an application GenericsKbAVLApp to read in the attached text file (GenericsKB.txt) and store the data items within an AVL Tree. Each data item consists of a term (which should be used as the key – assume that there won’t be duplicate keys in the dataset), sentence and con-fidence score.
-After loading the dataset, a second file (GenericsKB-queries.txt) should be read in. This file consists of a list of terms (one term per line) only. The application should perform a search for each of the query terms (one at a time). If the term (e.g. “tree”) is found in the AVL tree, the data entry should be printed out (e.g. “tree: Trees remove carbon dioxide from the atmosphere. (1.0)"). If there is no match, an appropriate message should be printed out (e.g. “Term not found: tree”). 
-Your AVL Tree implementation can be created from scratch or re-used from anywhere. You may use the sample code provided. You may NOT replace the AVL Tree with a different data struc-ture. Use output redirection in Unix to save the output of each run to a file.
-Test that your application can load the dataset correctly. Manually construct a query file with 10 queries to test that the application can handle queries with both terms in the dataset and terms not in the dataset correctly.
+The Experiment section is asking you to analyze the efficiency of your AVL tree implementation by measuring how many comparisons (<, >, ==) are performed during insertions and searches. Then, you need to compare these real-world results with the expected theoretical performance of AVL trees.
+
+Breaking it down step by step:
+1. Modify your code to track comparisons
+Add counters (opCountInsert and opCountSearch) to count how many times keys are compared during insertions and searches.
+
+Every time you compare two keys (if term < node.key, if term == node.key), increment the appropriate counter.
+
+2. Run experiments on different dataset sizes
+Instead of always using the full dataset, generate 10 subsets of different sizes (n values) from the dataset.
+
+Example values of n: 5, 50, 500, 5,000, 50,000 (each increasing by a factor of ~10).
+
+Insert only n entries into the AVL tree for each experiment.
+
+3. Measure performance
+Keep the same query file for consistency.
+
+Run the queries on each subset and record:
+
+The total comparisons for insertions.
+
+The total comparisons for searches.
+
+The minimum (best case), maximum (worst case), and average number of comparisons.
+
+4. Compare with theoretical complexity
+The AVL tree has:
+
+Insertion complexity: 
+𝑂(log𝑛)
+O(logn)
+
+Search complexity: 
+O(logn)
+
+The experiment wants you to see if your measured comparison counts follow this trend.
+
+Plot graphs (comparisons vs. n) to compare:
+
+Your measured values.
+
+The theoretical expected values.
+
+
+5. Automate the process
+Instead of manually running the experiment for each n, you can write a script (Python/Java) that:
+
+Randomly picks n entries.
+
+Runs the AVL tree insertion.
+
+Runs the queries.
+
+Records comparison counts.
+
+Outputs data to a file or generates plots.
+
+Final Output
+A graph showing how the actual comparison counts for insertions and searches compare to the theoretical 
+𝑂(log𝑛)
+O(logn) behavior.
+
+A table of best/average/worst case comparison counts for different values of n.
+
+In short:
+Track comparisons during insertions and searches.
+
+Test your AVL tree with datasets of different sizes.
+
+Measure best/average/worst case comparisons.
+
+Compare against the expected O(logn) behavior.
+
+Visualize the results with graphs.
+
+Let me know if you need help coding the automation or plotting the results! 🚀

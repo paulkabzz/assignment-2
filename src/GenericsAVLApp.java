@@ -8,7 +8,11 @@ import java.util.*;
 public class GenericsAVLApp {
     private Node root;
     private Scanner scanner;
-
+    
+    // Instrumentation counters
+    private long searchComparisonCount = 0;
+    private long insertComparisonCount = 0;
+    
     // This is the terms for querying.
     private String[] terms;
     // private int size;
@@ -131,18 +135,27 @@ public class GenericsAVLApp {
     }
 
     private void loadFile(String file) throws IOException {
+        // Reset counters before loading file
+        resetCounters();
         
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
+            int count = 0;
             while ((line = reader.readLine()) != null) {
                 Statement statement = Statement.fromLine(line);
-                if (statement != null) insert(statement);
+                if (statement != null) {
+                    insert(statement);
+                    count++;
+                    if (count % 1000 == 0) {
+                        System.out.print("\rProcessed " + count + " statements...");
+                    }
+                }
             }
-
+            System.out.println("\nTotal insert comparisons: " + insertComparisonCount);
+        
         } catch (IOException e) {
             ConsoleStyle.printError("Error loading file: " + e.getMessage());
         }
-        
     }
 
 
@@ -194,13 +207,15 @@ public class GenericsAVLApp {
 
     private Node insertHelper(Statement statement, Node root) {
         if (root == null) return new Node(statement);
-
+    
+        insertComparisonCount++; // Count comparison
         if (statement.getTerm().compareTo(root.statement.getTerm()) <= 0) {
             root.left = insertHelper(statement, root.left);
-        } else if (statement.getTerm().compareTo(root.statement.getTerm()) > 0) {
+        } else {
+            insertComparisonCount++; // Count comparison
             root.right = insertHelper(statement, root.right);
         }
-
+    
         return balance(root);
     }
 
@@ -222,34 +237,70 @@ public class GenericsAVLApp {
         
         loadTerms(fileName);
         
+        // Reset counters before starting searches
+        resetCounters();
+        
         for (String term : terms) {
             if (term == null) break; // Stop when we reach end of terms
+            
+            // Reset search counter for each term
+            searchComparisonCount = 0;
+            
             Node result = searchHelper(this.root, term.trim());
+            
             if (result != null) {
                 Statement _statement = result.statement;
-                System.out.printf("%s: %s (%.1f)%n", 
+                System.out.printf("%s: %s (%.1f) - Comparisons: %d%n", 
                     _statement.getTerm(), 
                     _statement.getSentence(), 
-                    _statement.getConfidenceScore());
+                    _statement.getConfidenceScore(),
+                    searchComparisonCount);
             } else {
-                System.out.println("Term not found: " + term);
+                System.out.println("Term not found: " + term + " - Comparisons: " + searchComparisonCount);
             }
         }
+        
+        // Report total operation counts after all searches
+        reportOperationCounts();
+        
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
     }
- 
+
     // O(log(n))
     private Node searchHelper(Node root, String term) {
         if (root == null) {
             return null;
         }
 
+        searchComparisonCount++; // Count comparison
         if (root.statement.getTerm().equals(term)) return root;
-
+    
+        searchComparisonCount++; // Count comparison
         if (term.compareTo(root.statement.getTerm()) > 0) {
             return searchHelper(root.right, term);
         }
-
+    
         return searchHelper(root.left, term);
     }
 
+    /**
+     * Resets the operation counters
+     */
+    private void resetCounters() {
+        searchComparisonCount = 0;
+        insertComparisonCount = 0;
+    }
+    
+    /**
+     * Reports the current operation counts
+     */
+    private void reportOperationCounts() {
+        System.out.println(ConsoleStyle.BLUE + "📊 Operation Counts:" + ConsoleStyle.RESET);
+        System.out.println("  Search comparisons: " + searchComparisonCount);
+        System.out.println("  Insert comparisons: " + insertComparisonCount);
+        System.out.println("  Total comparisons: " + (searchComparisonCount + insertComparisonCount));
+    }
+
+  
 }

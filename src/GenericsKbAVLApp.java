@@ -157,26 +157,40 @@ public class GenericsKbAVLApp {
     // Main method to run the application
     public static void main(String[] args) {
         GenericsKbAVLApp app = new GenericsKbAVLApp();
-        app.runApplication();
+        
+        // Check if input file is provided as command line argument
+        if (args.length >= 1) {
+            String inputFile = args[0];
+            String queryFile = args.length >= 2 ? args[1] : "src/GenericsKB-queries.txt";
+            app.runApplication(inputFile, queryFile);
+        } else {
+            app.runApplication("src/GenericsKB.txt", "src/GenericsKB-queries.txt");
+        }
     }
-
-    public void runApplication() {
+    
+    // Modified to accept file paths as parameters
+    public void runApplication(String inputFile, String queryFile) {
         try {
             // Reset counters before loading
             resetComparisonCounters();
-
-            // Load knowledge base
-            loadKnowledgeBase("src/GenericsKB.txt");
-
-            // Process queries
-            processQueries("src/GenericsKB-queries.txt");
-
+    
+            // Load knowledge base from specified file
+            loadKnowledgeBase(inputFile);
+    
+            // Process queries from specified file
+            processQueries(queryFile);
+    
             // Print comparison counts
             System.out.println("Insert Comparison Count: " + getInsertComparisonCount());
             System.out.println("Search Comparison Count: " + getSearchComparisonCount());
         } catch (IOException e) {
             System.err.println("Error processing files: " + e.getMessage());
         }
+    }
+    
+    // Keep the original method for backward compatibility
+    public void runApplication() {
+        runApplication("src/GenericsKB.txt", "src/GenericsKB-queries.txt");
     }
 
     private void loadKnowledgeBase(String filename) throws IOException {

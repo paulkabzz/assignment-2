@@ -65,15 +65,21 @@ class AVLTreeExperiment:
         :param subset_file: Path to the subset file
         :return: Tuple of (insert_count, search_count)
         """
-        # Prepare Java command
+        # Get absolute paths to ensure Java can find the files
+        abs_subset_path = os.path.abspath(subset_file)
+        abs_query_path = os.path.abspath(self.query_file)
+        
+        # Prepare Java command with the subset file as first argument
         java_command = [
-            'make', 
-            'run',
+            'java', 
+            '-cp', 
+            'bin', 
+            'GenericsKbAVLApp',
+            abs_subset_path,  # Pass subset file as first argument
+            abs_query_path    # Pass query file as second argument
         ]
         
-        # Set environment variables to pass subset file
-        env = os.environ.copy()
-        env['INPUT_FILE'] = subset_file
+        print(f"Running command: {' '.join(java_command)}")
         
         # Run the Java application
         try:
@@ -81,21 +87,34 @@ class AVLTreeExperiment:
             result = subprocess.run(
                 java_command, 
                 capture_output=True, 
-                text=True,
-                env=env
+                text=True
             )
             
-            # Parse output
-            lines = result.stdout.split('\n')
-            insert_count = int(lines[-2].split(':')[1].strip())
-            search_count = int(lines[-1].split(':')[1].strip())
+            # Print any errors for debugging
+            if result.stderr:
+                print(f"Java stderr: {result.stderr}")
             
+            # Parse output
+            insert_count = None
+            search_count = None
+            
+            for line in result.stdout.split('\n'):
+                if "Insert Comparison Count:" in line:
+                    insert_count = int(line.split(':')[1].strip())
+                elif "Search Comparison Count:" in line:
+                    search_count = int(line.split(':')[1].strip())
+            
+            if insert_count is None or search_count is None:
+                print(f"Could not find comparison counts in output. Full output:\n{result.stdout}")
+                return None, None
+                
             return insert_count, search_count
         
         except Exception as e:
             print(f"Error running experiment: {e}")
             return None, None
     
+    # Add this to your run_experiments method
     def run_experiments(self, num_runs=5):
         """
         Conduct experiments for different dataset sizes
@@ -110,9 +129,12 @@ class AVLTreeExperiment:
         for size in self.dataset_sizes:
             print(f"Running experiments for dataset size: {size}")
             
-            for _ in range(num_runs):
+            for run in range(num_runs):
+                print(f"  Run {run+1}/{num_runs}")
+                
                 # Generate subset
                 subset_file = self.generate_subset(size)
+                print(f"  Created subset file: {subset_file} with {size} entries")
                 
                 # Run experiment
                 insert_count, search_count = self.run_java_experiment(subset_file)
@@ -121,6 +143,9 @@ class AVLTreeExperiment:
                 if insert_count is not None:
                     self.insert_counts[size].append(insert_count)
                     self.search_counts[size].append(search_count)
+                    print(f"  Results: Insert={insert_count}, Search={search_count}")
+                else:
+                    print(f"  Failed to get results for run {run+1}")
                 
                 # Clean up temporary file
                 os.remove(subset_file)

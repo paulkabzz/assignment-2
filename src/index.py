@@ -21,8 +21,8 @@ class AVLTreeExperiment:
         
         # Experiment parameters
         self.dataset_sizes = [
-            5, 50, 500, 1000, 2000, 5000, 
-            10000, 20000, 35000, 50000
+            1, 5, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 7500, 
+            10000, 20000, 25000, 30000, 35000, 40000, 45000, 50000
         ]
         
         # Results storage
@@ -74,7 +74,7 @@ class AVLTreeExperiment:
             'java', 
             '-cp', 
             'bin', 
-            'GenericsKbAVLApp',
+            'Main',
             abs_subset_path,  # Pass subset file as first argument
             abs_query_path    # Pass query file as second argument
         ]
@@ -181,21 +181,33 @@ class AVLTreeExperiment:
         # Insertion Comparison Counts
         plt.subplot(1, 2, 1)
         plt.title('Insertion Comparison Counts')
-        plt.plot(results_df['Size'], results_df['Insert_Avg'], label='Average')
-        plt.plot(results_df['Size'], results_df['Insert_Min'], label='Minimum')
-        plt.plot(results_df['Size'], results_df['Insert_Max'], label='Maximum')
+        plt.plot(results_df['Size'], results_df['Insert_Avg'], 'o-', label='Average')
+        plt.plot(results_df['Size'], results_df['Insert_Min'], 's-', label='Minimum')
+        plt.plot(results_df['Size'], results_df['Insert_Max'], '^-', label='Maximum')
+        
+        # Add theoretical n*log(n) line for comparison
+        sizes = results_df['Size']
+        n_log_n = [n * np.log2(n) for n in sizes]
+        plt.plot(sizes, n_log_n, '--', label='n*log₂(n)')
+        
         plt.xlabel('Dataset Size')
         plt.ylabel('Comparison Count')
         plt.xscale('log')
+        plt.yscale('log')  # Use log-log scale to better see the relationship
         plt.legend()
         plt.grid(True)
         
         # Search Comparison Counts
         plt.subplot(1, 2, 2)
         plt.title('Search Comparison Counts')
-        plt.plot(results_df['Size'], results_df['Search_Avg'], label='Average')
-        plt.plot(results_df['Size'], results_df['Search_Min'], label='Minimum')
-        plt.plot(results_df['Size'], results_df['Search_Max'], label='Maximum')
+        plt.plot(results_df['Size'], results_df['Search_Avg'], 'o-', label='Average')
+        plt.plot(results_df['Size'], results_df['Search_Min'], 's-', label='Minimum')
+        plt.plot(results_df['Size'], results_df['Search_Max'], '^-', label='Maximum')
+        
+        # Add theoretical log(n) line for comparison
+        log_n = [np.log2(n) for n in sizes]
+        plt.plot(sizes, log_n, '--', label='log₂(n)')
+        
         plt.xlabel('Dataset Size')
         plt.ylabel('Comparison Count')
         plt.xscale('log')
@@ -204,6 +216,39 @@ class AVLTreeExperiment:
         
         plt.tight_layout()
         plt.savefig('avl_tree_performance.png')
+        plt.close()
+        
+        # Also create a theoretical comparison plot
+        plt.figure(figsize=(10, 5))
+        
+        # Calculate theoretical log(n) values
+        sizes = results_df['Size']
+        log_n = [np.log2(n) for n in sizes]
+        n_log_n = [n * np.log2(n) for n in sizes]
+        
+        plt.subplot(1, 2, 1)
+        plt.title('Search: Actual vs Theoretical log(n)')
+        plt.plot(sizes, results_df['Search_Avg'], 'o-', label='Actual')
+        plt.plot(sizes, log_n, 's-', label='log₂(n)')
+        plt.xlabel('Dataset Size')
+        plt.ylabel('Comparison Count')
+        plt.xscale('log')
+        plt.legend()
+        plt.grid(True)
+        
+        plt.subplot(1, 2, 2)
+        plt.title('Insert: Actual vs Theoretical n·log(n)')
+        plt.plot(sizes, results_df['Insert_Avg'], 'o-', label='Actual')
+        plt.plot(sizes, n_log_n, 's-', label='n·log₂(n)')
+        plt.xlabel('Dataset Size')
+        plt.ylabel('Comparison Count')
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.legend()
+        plt.grid(True)
+        
+        plt.tight_layout()
+        plt.savefig('avl_tree_theoretical.png', dpi=300)
         plt.close()
     
     def run(self):

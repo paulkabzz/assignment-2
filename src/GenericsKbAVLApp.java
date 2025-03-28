@@ -1,85 +1,111 @@
 import java.io.*;
-import java.util.*;
+
+/**
+ * AVL Tree implementation of the GenericsKB knowledge base.
+ * This class implements a self-balancing AVL tree data structure
+ * to store and retrieve statements efficiently.
+ * It includes instrumentation for counting key comparisons during
+ * insert and search operations for performance analysis.
+ * 
+ * This datastructure was implemented by GeeksForGeeks and modified to fit this project. Some of the implementation was also taken from the notes.
+ * https://www.geeksforgeeks.org/avl-tree-program-in-java/
+ */
 
 public class GenericsKbAVLApp {
-    // Instrumentation counters with static methods to track
     private static int insertComparisonCount = 0;
     private static int searchComparisonCount = 0;
 
     private Node root;
 
-    // Node class for AVL Tree
-    private class Node {
-        Statement statement;
-        Node left, right;
-        int height;
-
-        Node(Statement statement) {
-            this.statement = statement;
-            this.height = 1;
-        }
-    }
-
-    // Static method to reset counters
+ /**
+     * Resets the comparison counters to zero.
+     * Should be called before starting a new experiment.
+     */
     public static void resetComparisonCounters() {
         insertComparisonCount = 0;
         searchComparisonCount = 0;
     }
 
-    // Static methods to get comparison counts
+    /**
+     * Returns the current insert comparison count.
+     * 
+     * @return The number of key comparisons performed during insert operations
+     */
     public static int getInsertComparisonCount() {
         return insertComparisonCount;
     }
 
+    /**
+     * Returns the current search comparison count.
+     * 
+     * @return The number of key comparisons performed during search operations
+     */
     public static int getSearchComparisonCount() {
         return searchComparisonCount;
     }
 
-    // Modify insert to use static counter
+    /**
+     * Inserts a statement into the AVL tree.
+     * 
+     * @param statement The statement to insert
+     */
     public void insert(Statement statement) {
         root = insertRecursive(root, statement);
     }
 
+    /**
+     * Recursively inserts a statement into the AVL tree.
+     * 
+     * @param current The current node being examined
+     * @param statement The statement to insert
+     * @return The updated node after insertion
+     */
     private Node insertRecursive(Node current, Statement statement) {
-        // Base case: create new node
         if (current == null) {
             return new Node(statement);
         }
 
-        // Increment insert comparison count
         insertComparisonCount++;
 
-        // Compare and decide which subtree to traverse
-        if (statement.getTerm().compareTo(current.statement.getTerm()) <= 0) {
+        int comparisonResult = statement.getTerm().compareTo(current.statement.getTerm());
+        
+        if (comparisonResult <= 0) {
             current.left = insertRecursive(current.left, statement);
         } else {
             current.right = insertRecursive(current.right, statement);
         }
-
-        // Update height
+    
         current.height = 1 + Math.max(getHeight(current.left), getHeight(current.right));
-
-        // Balance the tree
+    
         return balance(current);
     }
 
-    // Search method with static counter
+    /**
+     * Searches for a statement with the given term.
+     * 
+     * @param term The term to search for
+     * @return The node containing the statement if found, null otherwise
+     */
     public Node search(String term) {
         return searchRecursive(root, term);
     }
 
+    /**
+     * Recursively searches for a statement with the given term.
+     * 
+     * @param current The current node being examined
+     * @param term The term to search for
+     * @return The node containing the statement if found, null otherwise
+     */
     private Node searchRecursive(Node current, String term) {
-        // Base cases
         if (current == null) {
             return null;
         }
 
-        // Increment search comparison count
-        searchComparisonCount++;
-
-        // Compare current node's term
         int comparisonResult = term.compareTo(current.statement.getTerm());
-
+        
+        searchComparisonCount++;
+    
         if (comparisonResult == 0) {
             return current;
         } else if (comparisonResult < 0) {
@@ -89,98 +115,106 @@ public class GenericsKbAVLApp {
         }
     }
 
-    // Balancing methods
+    /**
+     * Balances the tree at the given node if necessary.
+     * 
+     * @param node The node to check for balance
+     * @return The balanced node
+     */
     private Node balance(Node node) {
         if (node == null) return null;
-
-        // Get balance factor
+    
         int balance = getBalanceFactor(node);
-
-        // Left heavy
+    
         if (balance > 1) {
             if (getBalanceFactor(node.left) < 0) {
                 node.left = leftRotate(node.left);
             }
             return rightRotate(node);
         }
-
-        // Right heavy
+    
         if (balance < -1) {
             if (getBalanceFactor(node.right) > 0) {
                 node.right = rightRotate(node.right);
             }
             return leftRotate(node);
         }
-
+    
         return node;
     }
 
+    /**
+     * Performs a right rotation on the given node.
+     * 
+     * @param y The node to rotate
+     * @return The new root after rotation
+     */
     private Node rightRotate(Node y) {
         Node x = y.left;
         Node T2 = x.right;
 
-        // Perform rotation
         x.right = y;
         y.left = T2;
 
-        // Update heights
         y.height = 1 + Math.max(getHeight(y.left), getHeight(y.right));
         x.height = 1 + Math.max(getHeight(x.left), getHeight(x.right));
 
         return x;
     }
 
+    /**
+     * Performs a left rotation on the given node.
+     * 
+     * @param x The node to rotate
+     * @return The new root after rotation
+     */
     private Node leftRotate(Node x) {
         Node y = x.right;
         Node T2 = y.left;
 
-        // Perform rotation
         y.left = x;
         x.right = T2;
 
-        // Update heights
         x.height = 1 + Math.max(getHeight(x.left), getHeight(x.right));
         y.height = 1 + Math.max(getHeight(y.left), getHeight(y.right));
 
         return y;
     }
 
-    // Utility methods
+    /**
+     * Gets the height of a node.
+     * 
+     * @param node The node to get the height of
+     * @return The height of the node, or 0 if the node is null
+     */
     private int getHeight(Node node) {
         return node == null ? 0 : node.height;
     }
 
+    /**
+     * Calculates the balance factor of a node.
+     * 
+     * @param node The node to calculate the balance factor for
+     * @return The balance factor (left height - right height)
+     */
     private int getBalanceFactor(Node node) {
         return node == null ? 0 : getHeight(node.left) - getHeight(node.right);
     }
-
-    // Main method to run the application
-    public static void main(String[] args) {
-        GenericsKbAVLApp app = new GenericsKbAVLApp();
-        
-        // Check if input file is provided as command line argument
-        if (args.length >= 1) {
-            String inputFile = args[0];
-            String queryFile = args.length >= 2 ? args[1] : "src/GenericsKB-queries.txt";
-            app.runApplication(inputFile, queryFile);
-        } else {
-            app.runApplication("src/GenericsKB.txt", "src/GenericsKB-queries.txt");
-        }
-    }
     
-    // Modified to accept file paths as parameters
+    /**
+     * Runs the application with the specified input and query files.
+     * 
+     * @param inputFile Path to the knowledge base file
+     * @param queryFile Path to the query terms file
+     */
     public void runApplication(String inputFile, String queryFile) {
         try {
-            // Reset counters before loading
             resetComparisonCounters();
     
-            // Load knowledge base from specified file
             loadKnowledgeBase(inputFile);
     
-            // Process queries from specified file
             processQueries(queryFile);
     
-            // Print comparison counts
             System.out.println("Insert Comparison Count: " + getInsertComparisonCount());
             System.out.println("Search Comparison Count: " + getSearchComparisonCount());
         } catch (IOException e) {
@@ -188,11 +222,19 @@ public class GenericsKbAVLApp {
         }
     }
     
-    // Keep the original method for backward compatibility
+    /**
+     * Runs the application with default input and query files.
+     */
     public void runApplication() {
         runApplication("src/GenericsKB.txt", "src/GenericsKB-queries.txt");
     }
 
+    /**
+     * Loads the knowledge base from a file.
+     * 
+     * @param filename Path to the knowledge base file
+     * @throws IOException If an I/O error occurs
+     */
     private void loadKnowledgeBase(String filename) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -205,6 +247,12 @@ public class GenericsKbAVLApp {
         }
     }
 
+    /**
+     * Processes queries from a file.
+     * 
+     * @param filename Path to the query terms file
+     * @throws IOException If an I/O error occurs
+     */
     private void processQueries(String filename) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String term;

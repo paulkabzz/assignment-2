@@ -16,7 +16,7 @@ SRC_FILES = $(shell find $(SRC_DIR) -name "*.java")
 CLASS_FILES = $(patsubst $(SRC_DIR)/%.java, $(BIN_DIR)/%.class, $(SRC_FILES))
 
 # Main class
-MAIN_CLASS = GenericsKbAVLApp
+MAIN_CLASS = Main
 
 # Default target: compile
 all: $(CLASS_FILES)
@@ -48,4 +48,16 @@ clean:
 	rm -rf $(BIN_DIR) $(DOCS_DIR)
 
 # Phony targets
-.PHONY: all run clean javadoc test prepare-test
+# Run the Python plotting script
+plot: all
+	@if command -v python3 >/dev/null 2>&1; then \
+		python3 $(SRC_DIR)/index.py; \
+	elif command -v python >/dev/null 2>&1; then \
+		python $(SRC_DIR)/index.py; \
+	else \
+		echo "Python not found. Please install Python to run the plotting script."; \
+		exit 1; \
+	fi
+
+# Add plot to the phony targets
+.PHONY: all run clean javadoc test prepare-test plot

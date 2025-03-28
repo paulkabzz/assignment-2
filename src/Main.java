@@ -13,7 +13,7 @@ public class Main {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        GenericsAVLApp app = new GenericsAVLApp(scanner);
+        GenericsKbAVLApp app = new GenericsKbAVLApp();
 
         
         ConsoleStyle.clearScreen();
@@ -25,7 +25,7 @@ public class Main {
         // System.out.println(ConsoleStyle.CYAN + "2. " + ConsoleStyle.RESET + "Binary Search Tree implementation");
         // ConsoleStyle.printPrompt("Enter your choice: ");
 
-        app.run();
+  
 
         
         // int choice = scanner.nextInt();

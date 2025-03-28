@@ -211,8 +211,10 @@ public class GenericsKbAVLApp {
         try {
             resetComparisonCounters();
     
+            System.out.println("Loading knowledge base from: " + inputFile);
             loadKnowledgeBase(inputFile);
     
+            System.out.println("Processing queries from: " + queryFile);
             processQueries(queryFile);
     
             System.out.println("Insert Comparison Count: " + getInsertComparisonCount());
@@ -226,7 +228,27 @@ public class GenericsKbAVLApp {
      * Runs the application with default input and query files.
      */
     public void runApplication() {
-        runApplication("src/GenericsKB.txt", "src/GenericsKB-queries.txt");
+        // Prompt user for input and query files
+        BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            System.out.print("Enter knowledge base file path (or press Enter for default 'src/GenericsKB.txt'): ");
+            String inputFile = consoleReader.readLine().trim();
+            if (inputFile.isEmpty()) {
+                inputFile = "src/GenericsKB.txt";
+            }
+            
+            System.out.print("Enter query file path (or press Enter for default 'src/GenericsKB-queries.txt'): ");
+            String queryFile = consoleReader.readLine().trim();
+            if (queryFile.isEmpty()) {
+                queryFile = "src/GenericsKB-queries.txt";
+            }
+            
+            runApplication(inputFile, queryFile);
+        } catch (IOException e) {
+            System.err.println("Error reading input: " + e.getMessage());
+            // Fall back to defaults if there's an error
+            runApplication("src/GenericsKB.txt", "src/GenericsKB-queries.txt");
+        }
     }
 
     /**

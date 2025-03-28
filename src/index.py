@@ -4,17 +4,32 @@ import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import argparse
 
 class AVLTreeExperiment:
-    def __init__(self, input_file, query_file):
+    def __init__(self, input_file=None, query_file=None):
         """
         Initialize the experiment with input and query files
         
         :param input_file: Path to the original knowledge base file
         :param query_file: Path to the query terms file
         """
+        # If files not provided, prompt for them
+        if input_file is None:
+            input_file = input("Enter knowledge base file path (or press Enter for default 'src/GenericsKB.txt'): ")
+            if not input_file:
+                input_file = "src/GenericsKB.txt"
+        
+        if query_file is None:
+            query_file = input("Enter query file path (or press Enter for default 'src/GenericsKB-queries.txt'): ")
+            if not query_file:
+                query_file = "src/GenericsKB-queries.txt"
+        
         self.input_file = input_file
         self.query_file = query_file
+        
+        print(f"Using knowledge base file: {self.input_file}")
+        print(f"Using query file: {self.query_file}")
         
         # Read full dataset
         self.full_dataset = self.read_dataset()
@@ -271,8 +286,16 @@ class AVLTreeExperiment:
 
 # Main execution
 if __name__ == '__main__':
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description='Run AVL Tree performance experiments')
+    parser.add_argument('--input', '-i', help='Path to knowledge base file')
+    parser.add_argument('--query', '-q', help='Path to query file')
+    
+    args = parser.parse_args()
+    
+    # Create experiment with command line arguments or prompt for input
     experiment = AVLTreeExperiment(
-        input_file='src/GenericsKB.txt',
-        query_file='src/GenericsKB-queries.txt'
+        input_file=args.input,
+        query_file=args.query
     )
     experiment.run()
